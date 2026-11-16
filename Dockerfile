@@ -1,22 +1,20 @@
-
 FROM python:3.12-slim
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
+# Install dependencies
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt \
-    && useradd --system --uid 10001 app \
-    && mkdir -p /data \
-    && chown -R app:app /data
+# Copy application
+COPY app.py .
 
-COPY --chown=app:app app.py .
+# Create persistent data directory
+RUN mkdir -p /data \
+    && chown -R 10001:10001 /data \
+    && chmod 750 /data
 
-USER app
-
-EXPOSE 18883
+# Run as non-root user
+USER 10001:10001
 
 CMD ["python", "app.py"]
