@@ -1,0 +1,19 @@
+services:
+  frigate-email:
+    build: .
+    container_name: frigate-email
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    ports:
+      - "${MQTT_BIND_IP:-10.0.0.5}:1883:18883"
+
+    volumes:
+      - ./data:/data
+
+    init: true
+
+    security_opt:
+      - no-new-privileges:true
